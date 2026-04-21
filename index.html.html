@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مولد أسماء وزخرفة احترافي</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f172a;
+  --card:#1e293b;
+  --muted:#334155;
+  --text:#ffffff;
+  --accent:#22c55e;
+  --danger:#ef4444;
+}
+.light{
+  --bg:#f1f5f9;
+  --card:#ffffff;
+  --muted:#e2e8f0;
+  --text:#0f172a;
+  --accent:#16a34a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Cairo',Arial;
+  background:var(--bg);
+  color:var(--text);
+  text-align:center;
+}
+header{
+  padding:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.btn{
+  padding:8px 10px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.container{padding:12px}
+input{
+  width:90%;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  font-size:16px;
+  outline:none;
+}
+.toolbar{
+  margin:10px 0;
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.result{
+  background:var(--card);
+  margin:10px auto;
+  padding:10px;
+  border-radius:12px;
+  width:90%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.copy{
+  background:var(--accent);
+  color:#fff;
+}
+.heart{
+  background:transparent;
+  color:var(--danger);
+  font-size:18px;
+  border:none;
+  cursor:pointer;
+  margin-left:6px;
+}
+.ad{
+  margin:12px auto;
+  padding:14px;
+  width:90%;
+  background:var(--muted);
+  border-radius:10px;
+}
+.toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#000;
+  color:#fff;
+  padding:10px 14px;
+  border-radius:10px;
+  opacity:0;
+  transition:.3s;
+}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header>
+  <div>🔥 مولد أسماء احترافي</div>
+  <div>
+    <button class="btn" onclick="toggleTheme()">🌗</button>
+    <button class="btn" onclick="showFav()">❤️</button>
+    <button class="btn" onclick="clearAll()">🗑️</button>
+  </div>
+</header>
+
+<div class="ad">🔥 إعلان علوي (AdSense)</div>
+
+<div class="container">
+  <input id="text" placeholder="اكتب اسم أو سيبها فاضية عشوائي..." oninput="debounceGenerate()">
+
+  <div class="toolbar">
+    <button class="btn" onclick="generate()">توليد</button>
+    <button class="btn" onclick="randomName()">⚡ عشوائي</button>
+  </div>
+
+  <div id="results"></div>
+</div>
+
+<div class="ad">💸 إعلان سفلي</div>
+
+<div class="toast" id="toast">تم ✔</div>
+
+<script>
+let timer;
+let favorites = JSON.parse(localStorage.getItem('fav')||'[]');
+
+// 🔥 قاعدة أسماء ضخمة (مش 10 أسماء خلاص)
+const base = [
+"Shadow","Ghost","Viper","King","Legend","Dark","Neo","Blaze","Storm","Venom","Alpha","Omega",
+"Rex","Wolf","Titan","Frost","Inferno","Night","Blade","Cyber","Zero","Nova","Hawk","Drift",
+"Skull","Reaper","Demon","Angel","Chaos","Rogue","Phantom","Matrix","Ninja","Samurai","Hunter"
+];
+
+const suffix = [
+"X","Pro","YT","HD","GG","777","OP","FX","Z","Xx","God","Elite","Prime","King","Lord"
+];
+
+function getRandomName(){
+  const a = base[Math.floor(Math.random()*base.length)];
+  const b = suffix[Math.floor(Math.random()*suffix.length)];
+  return a + b + Math.floor(Math.random()*999);
+}
+
+// توليد 1000 اسم حقيقي مختلف (مش شكل متكرر)
+let names = Array.from({length:1000},()=>getRandomName());
+
+function debounceGenerate(){
+  clearTimeout(timer);
+  timer=setTimeout(generate,200);
+}
+
+function decorate(t){
+  return [
+    t,
+    `★${t}★`,`✿${t}✿`,`『${t}』`,`♛ ${t} ♛`,
+    `⫷${t}⫸`,`☬${t}☬`,`꧁${t}꧂`,`✧${t}✧`,`彡${t}彡`,
+    `⚡${t}⚡`,`☠ ${t} ☠`,`★彡 ${t} 彡★`
+  ];
+}
+
+function generate(){
+  const text=document.getElementById('text').value.trim();
+  const results=document.getElementById('results');
+  results.innerHTML='';
+
+  let baseName = text || names[Math.floor(Math.random()*names.length)];
+
+  localStorage.setItem('last',baseName);
+
+  decorate(baseName).forEach((s,i)=>{
+    const div=document.createElement('div');
+    div.className='result';
+
+    div.innerHTML=`
+      <span>${s}</span>
+      <div>
+        <button class='heart' onclick="addFav('${s.replace(/'/g,"\\'")}')">❤</button>
+        <button class='btn copy' onclick="copyText('${s.replace(/'/g,"\\'")}')">نسخ</button>
+      </div>
+    `;
+
+    results.appendChild(div);
+
+    if((i+1)%6===0){
+      const ad=document.createElement('div');
+      ad.className='ad';
+      ad.innerText='📢 إعلان';
+      results.appendChild(ad);
+    }
+  });
+}
+
+function addFav(item){
+  if(!favorites.includes(item)){
+    favorites.push(item);
+    localStorage.setItem('fav',JSON.stringify(favorites));
+    showToast();
+  }
+}
+
+function showFav(){
+  const results=document.getElementById('results');
+  results.innerHTML='';
+
+  favorites.forEach(f=>{
+    const div=document.createElement('div');
+    div.className='result';
+    div.innerHTML=`<span>${f}</span><button class='btn copy' onclick="copyText('${f.replace(/'/g,"\\'")}')">نسخ</button>`;
+    results.appendChild(div);
+  });
+}
+
+function randomName(){
+  document.getElementById('text').value='';
+  generate();
+}
+
+function copyText(t){
+  navigator.clipboard.writeText(t);
+  showToast();
+}
+
+function showToast(){
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1200);
+}
+
+function toggleTheme(){
+  document.body.classList.toggle('light');
+}
+
+function clearAll(){
+  document.getElementById('text').value='';
+  document.getElementById('results').innerHTML='';
+}
+
+window.onload=()=>{
+  const last=localStorage.getItem('last');
+  if(last){document.getElementById('text').value=last;generate();}
+}
+</script>
+
+</body>
+</html>
